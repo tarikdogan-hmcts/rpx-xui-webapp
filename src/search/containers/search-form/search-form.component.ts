@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { GovUiConfigModel } from '@hmcts/rpx-xui-common-lib/lib/gov-ui/models';
+import { SearchRequestCriteria } from 'src/search/models/search-request-criteria.model';
+import { SearchRequestParty } from 'src/search/models/search-request-party.model';
+import { SearchRequestSortCriteria } from 'src/search/models/search-request-sort-criteria.model';
+import { SearchRequest } from 'src/search/models/search-request.model';
 
 @Component({
   selector: 'exui-search-form',
@@ -20,6 +24,8 @@ export class SearchFormComponent implements OnInit {
   public dateOfDeathConfig: GovUiConfigModel;
   public servicesConfig: GovUiConfigModel;
   public services: SearchFormServiceListItem[];
+
+  private searchRequest: SearchRequest;
 
   constructor(private readonly fb: FormBuilder) {
     this.caseRefConfig = {
@@ -110,7 +116,60 @@ export class SearchFormComponent implements OnInit {
   }
 
   public onSubmit(): void {
+    this.searchRequest = this.populateSearchRequest(this.formGroup);
+  }
 
+  public populateSearchRequest(formGroup: FormGroup): SearchRequest {
+    return {
+      maxReturnRecordCount: 25,
+      startRecordNumber: 1,
+      searchCriteria: this.getSearchRequestCriteria(formGroup),
+      sortCriteria: this.getSearchRequestSortCriteria(formGroup)
+    }
+  }
+
+  public getSearchRequestCriteria(formGroup: FormGroup): SearchRequestCriteria {
+    const searchRequestParty = this.getSearchRequestParty(formGroup);
+
+    return {
+      ccdJurisdictionIds: [
+        formGroup.get('servicesList').value
+      ],
+      caseReferences: [
+        formGroup.get('caseRef').value
+      ],
+      otherReferences: [
+        formGroup.get('otherRef').value
+      ],
+      parties: [
+        searchRequestParty
+      ]
+    };
+  }
+
+  public getSearchRequestSortCriteria(formGroup): SearchRequestSortCriteria {
+    // Sort criteria requirement not defined at this stage
+    // Might be introduced in future
+    return null;
+  }
+
+  public getSearchRequestParty(formGroup: FormGroup): SearchRequestParty {
+    const dateOfBirth = new Date(formGroup.get('dateOfBirth_year').value,
+      formGroup.get('dateOfBirth_month').value,
+      formGroup.get('dateOfBirth_day').value);
+
+    const dateOfDeath = new Date(formGroup.get('dateOfDeath_year').value,
+      formGroup.get('dateOfDeath_month').value,
+      formGroup.get('dateOfDeath_day').value);
+
+    return {
+      addressLine1: formGroup.get('addressLine1').value,
+      dateOfBirth: dateOfBirth.toDateString(),
+      dateOfDeath: dateOfDeath.toDateString(),
+      emailAddress: formGroup.get('email').value,
+      partyName: formGroup.get('fullName').value,
+      postCode: formGroup.get('postcode').value
+    }
   }
 }
 
