@@ -155,7 +155,7 @@ export class SearchFormComponent implements OnInit {
     const addressLine1 = formGroup.get('addressLine1').value;
     const emailAddress = formGroup.get('email').value;
     const partyName = formGroup.get('fullName').value;
-    const postcode = formGroup.get('postcode').value;
+    const postCode = formGroup.get('postcode').value;
 
     const dateOfBirth = isDefined(formGroup.get('dateOfBirth_year').value)
       ? `${formGroup.get('dateOfBirth_day').value}-${formGroup.get('dateOfBirth_month').value}-${formGroup.get('dateOfBirth_year').value}`
@@ -165,15 +165,13 @@ export class SearchFormComponent implements OnInit {
       ? `${formGroup.get('dateOfDeath_day').value}-${formGroup.get('dateOfDeath_month').value}-${formGroup.get('dateOfDeath_year').value}`
       : null;
 
-    // Please note: "postcode" is one word, so we use "postcode", but API expects "postCode"
-    // Using "postCode" instead of "postcode" in our code will result in null values
     return {
-      addressLine1: addressLine1,
-      dateOfBirth: dateOfBirth,
-      dateOfDeath: dateOfDeath,
-      emailAddress: emailAddress,
-      partyName: partyName,
-      postCode: postcode
+      addressLine1,
+      dateOfBirth,
+      dateOfDeath,
+      emailAddress,
+      partyName,
+      postCode
     };
   }
 }
