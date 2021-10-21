@@ -11,11 +11,25 @@ describe('SearchFormComponent', () => {
   let component: SearchFormComponent;
   let fixture: ComponentFixture<SearchFormComponent>;
   const formBuilder = new FormBuilder();
-
+  const formGroup = formBuilder.group({
+    caseRef: '1234-2341-3412-4123',
+    otherRef: '456789',
+    fullName: 'A Test',
+    addressLine1: '156 Dummy Street',
+    postcode: 'SS1 2NA',
+    email: 'a@test.com',
+    dateOfBirth_day: '20',
+    dateOfBirth_month: '09',
+    dateOfBirth_year: '1997',
+    dateOfDeath_day: '12',
+    dateOfDeath_month: '05',
+    dateOfDeath_year: '2002',
+    servicesList: 'IA'
+  });
   const searchRequestParty: SearchRequestParty = {
     addressLine1: '156 Dummy Street',
-    dateOfBirth: 'Sun Dec 31 1899',
-    dateOfDeath: 'Sun Dec 31 1899',
+    dateOfBirth: '20-09-1997',
+    dateOfDeath: '12-05-2002',
     emailAddress: 'a@test.com',
     partyName: 'A Test',
     postCode: 'SS1 2NA'
@@ -56,22 +70,6 @@ describe('SearchFormComponent', () => {
     fixture = TestBed.createComponent(SearchFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-    
-    component.formGroup = formBuilder.group({
-      caseRef: '1234-2341-3412-4123',
-      otherRef: '456789',
-      fullName: 'A Test',
-      addressLine1: '156 Dummy Street',
-      postCode: 'SS1 2NA',
-      email: 'a@test.com',
-      dateOfBirth_day: '20',
-      dateOfBirth_month: '09',
-      dateOfBirth_year: '1997',
-      dateOfDeath_day: '12',
-      dateOfDeath_month: '05',
-      dateOfDeath_year: '2002',
-      servicesList: 'All'
-    });
   });
 
   it('should create', () => {
@@ -79,17 +77,17 @@ describe('SearchFormComponent', () => {
   });
 
   it('should get search request party', () => {
-    const searchRequestPartyResult = component.getSearchRequestParty(component.formGroup);
-    expect(searchRequestPartyResult).toBe(searchRequestParty);
+    const searchRequestPartyResult = component.getSearchRequestParty(formGroup);
+    expect(searchRequestPartyResult).toEqual(searchRequestParty);
   });
 
   it('should get search request criteria', () => {
-    const searchRequestCriteriaResult = component.getSearchRequestCriteria(component.formGroup);
-    expect(searchRequestCriteriaResult).toBe(searchRequestCriteria);
+    const searchRequestCriteriaResult = component.getSearchRequestCriteria(formGroup);
+    expect(searchRequestCriteriaResult).toEqual(searchRequestCriteria);
   });
 
   it('should populate search request model', () => {
-    const searchRequestResult = component.populateSearchRequest(component.formGroup);
-    expect(searchRequestResult).toBe(searchRequest);
+    const searchRequestResult = component.populateSearchRequest(formGroup);
+    expect(searchRequestResult).toEqual(searchRequest);
   });
 });

@@ -1,3 +1,4 @@
+import { isDefined } from '@angular/compiler/src/util';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { GovUiConfigModel } from '@hmcts/rpx-xui-common-lib/lib/gov-ui/models';
@@ -96,19 +97,19 @@ export class SearchFormComponent implements OnInit {
 
   public ngOnInit(): void {
     this.formGroup = this.fb.group({
-      caseRef: '',
-      otherRef: '',
-      fullName: '',
-      addressLine1: '',
-      postcode: '',
-      email: '',
-      dateOfBirth_day: '',
-      dateOfBirth_month: '',
-      dateOfBirth_year: '',
-      dateOfDeath_day: '',
-      dateOfDeath_month: '',
-      dateOfDeath_year: '',
-      servicesList: ''
+      caseRef: null,
+      otherRef: null,
+      fullName: null,
+      addressLine1: null,
+      postcode: null,
+      email: null,
+      dateOfBirth_day: null,
+      dateOfBirth_month: null,
+      dateOfBirth_year: null,
+      dateOfDeath_day: null,
+      dateOfDeath_month: null,
+      dateOfDeath_year: null,
+      servicesList: null
     });
 
     // Set default service selection to "All"
@@ -117,6 +118,7 @@ export class SearchFormComponent implements OnInit {
 
   public onSubmit(): void {
     this.searchRequest = this.populateSearchRequest(this.formGroup);
+    console.log(this.searchRequest);
   }
 
   public populateSearchRequest(formGroup: FormGroup): SearchRequest {
@@ -124,26 +126,22 @@ export class SearchFormComponent implements OnInit {
       maxReturnRecordCount: 25,
       startRecordNumber: 1,
       searchCriteria: this.getSearchRequestCriteria(formGroup),
-      sortCriteria: this.getSearchRequestSortCriteria(formGroup)
+      sortCriteria: null
     }
   }
 
   public getSearchRequestCriteria(formGroup: FormGroup): SearchRequestCriteria {
+    const jurisdictionId = formGroup.get('servicesList').value;
+    const caseReference = formGroup.get('caseRef').value;
+    const otherReference = formGroup.get('otherRef').value;
+
     const searchRequestParty = this.getSearchRequestParty(formGroup);
 
     return {
-      ccdJurisdictionIds: [
-        formGroup.get('servicesList').value
-      ],
-      caseReferences: [
-        formGroup.get('caseRef').value
-      ],
-      otherReferences: [
-        formGroup.get('otherRef').value
-      ],
-      parties: [
-        searchRequestParty
-      ]
+      ccdJurisdictionIds: [jurisdictionId],
+      caseReferences: [caseReference],
+      otherReferences: [otherReference],
+      parties: [searchRequestParty]
     };
   }
 
@@ -154,22 +152,29 @@ export class SearchFormComponent implements OnInit {
   }
 
   public getSearchRequestParty(formGroup: FormGroup): SearchRequestParty {
-    const dateOfBirth = new Date(formGroup.get('dateOfBirth_year').value,
-      formGroup.get('dateOfBirth_month').value,
-      formGroup.get('dateOfBirth_day').value);
+    const addressLine1 = formGroup.get('addressLine1').value;
+    const emailAddress = formGroup.get('email').value;
+    const partyName = formGroup.get('fullName').value;
+    const postcode = formGroup.get('postcode').value;
 
-    const dateOfDeath = new Date(formGroup.get('dateOfDeath_year').value,
-      formGroup.get('dateOfDeath_month').value,
-      formGroup.get('dateOfDeath_day').value);
+    const dateOfBirth = isDefined(formGroup.get('dateOfBirth_year').value)
+      ? `${formGroup.get('dateOfBirth_day').value}-${formGroup.get('dateOfBirth_month').value}-${formGroup.get('dateOfBirth_year').value}`
+      : null;
 
+    const dateOfDeath = isDefined(formGroup.get('dateOfDeath_year').value)
+      ? `${formGroup.get('dateOfDeath_day').value}-${formGroup.get('dateOfDeath_month').value}-${formGroup.get('dateOfDeath_year').value}`
+      : null;
+
+    // Please note: "postcode" is one word, so we use "postcode", but API expects "postCode"
+    // Using "postCode" instead of "postcode" in our code will result in null values
     return {
-      addressLine1: formGroup.get('addressLine1').value,
-      dateOfBirth: dateOfBirth.toDateString(),
-      dateOfDeath: dateOfDeath.toDateString(),
-      emailAddress: formGroup.get('email').value,
-      partyName: formGroup.get('fullName').value,
-      postCode: formGroup.get('postcode').value
-    }
+      addressLine1: addressLine1,
+      dateOfBirth: dateOfBirth,
+      dateOfDeath: dateOfDeath,
+      emailAddress: emailAddress,
+      partyName: partyName,
+      postCode: postcode
+    };
   }
 }
 

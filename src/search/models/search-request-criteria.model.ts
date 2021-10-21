@@ -5,8 +5,8 @@ export class SearchRequestCriteria {
   ccdJurisdictionIds: string[];
   caseManagementBaseLocationIds?: string[];
   caseManagementRegionIds?: string[];
-  caseReferences: string[];
-  otherReferences: string[];
-  parties: SearchRequestParty[];
+  caseReferences?: string[];
+  otherReferences?: string[];
+  parties?: SearchRequestParty[];
   stateIds?: string[];
 }
